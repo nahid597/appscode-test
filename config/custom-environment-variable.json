@@ -1,0 +1,6 @@
+{
+    "name" : "production",
+    "mail": {
+        "password": "app_password"
+    }
+}
