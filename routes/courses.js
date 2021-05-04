@@ -1,6 +1,31 @@
 const express = require('express');
 const {Course, courseValidation} = require('../models/course');
 const router = express.Router();
+var multer = require("multer");
+const path = require('path');
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null,'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null,  new Date().toISOString() + file.originalname);
+    }
+  })
+
+  const fileFilter = (req, file, cb) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      cb(null, true);
+    } else {
+      cb(new Error("something worng. file not upload"), false);
+    }
+  };
+
+  var upload = multer({ 
+      storage: storage,
+     });
+
+// var upload = multer({ dest: 'uploads/' })
 
 router.get('/',async(req,res) => {
     const courses = await Course.find();
@@ -18,7 +43,9 @@ router.get('/:id',async(req,res) => {
    
 });
 
-router.post('/', async(req,res) => {
+router.post('/', upload.single('courseImage'), async(req,res) => {
+
+    console.log(req.file);
 
     const result  = courseValidation(req.body);
 
@@ -30,7 +57,8 @@ router.post('/', async(req,res) => {
     let course = new Course({
         name: req.body.name,
         isPublished: req.body.isPublished,
-        price: req.body.price
+        price: req.body.price,
+        courseImage: req.file.path
     });
 
     course = await course.save();

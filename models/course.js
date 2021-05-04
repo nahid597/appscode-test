@@ -9,6 +9,7 @@ const courseSchema = new mongoose.Schema({
         required: function () {
             return this.isPublished
         }},
+    courseImage: String
 });
 
 const Course = mongoose.model('Course', courseSchema);
@@ -17,7 +18,8 @@ function courseValidation(course) {
     const schema = Joi.object({
         name: Joi.string().min(3).required(),
         isPublished: Joi.bool().required(),
-        price: Joi.number().required()
+        price: Joi.number().required(),
+        courseImage: Joi.string(),
     });
 
    const result = schema.validate(course);

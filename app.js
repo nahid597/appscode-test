@@ -4,6 +4,7 @@ const config = require('config');
 const courses = require('./routes/courses');
 const home = require('./routes/home');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 //connect with mongodb
 mongoose.connect('mongodb://localhost/apps-code',
@@ -44,9 +45,13 @@ async function getCourse() {
 console.log(`App name ${config.get('name')}`);
 console.log(`mail server name ${config.get('mail.host')}`);
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb',extended: true}));
 app.use(express.static('public'));
+app.use(bodyParser.json({limit: "100mb"}));
+app.use(bodyParser.urlencoded({limit: "100mb", extended: true, parameterLimit:50000}));
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/courses', courses);
 app.use('/',home);
 
